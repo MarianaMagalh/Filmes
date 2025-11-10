@@ -2,6 +2,13 @@
 CREATE DATABASE filmes_db;
 USE filmes_db;
 
+CREATE TABLE usuario(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100),
+    password VARCHAR(100)
+);
+
+
 -- Tabela principal: pais
 CREATE TABLE pais (
     id INT AUTO_INCREMENT PRIMARY KEY,
