@@ -83,6 +83,8 @@ CREATE TABLE filme (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     ano INT NOT NULL,
+    sinopse TEXT NOT NULL,
+    poster TEXT NOT NULL,
     id_genero INT,
     id_produtora INT,  -- FK para produtora
     FOREIGN KEY (id_genero) REFERENCES genero(id),
