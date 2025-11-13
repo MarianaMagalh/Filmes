@@ -27,27 +27,27 @@
 }
 
 .imgDeperente {
-    width: 90vh;
-    height: 100vh;
+    width: 100vh;
+    height: 120vh;
 }
 
 .imgFundoLogin {
     position: relative;
     z-index: 3;
-    right: 17.7rem;
+    right: 12.3rem;
     width: 100%;
     height: 100%;
 }
 
 .fundoForm {
     width: 150vh;
-    height: 100vh;
+    height: 120vh;
 }
 
 .containerLogin {
     position: relative;
     z-index: 4;
-    right: 50rem;
+    right: 45rem;
     width: 550px;
 }
 
@@ -57,12 +57,7 @@
     width: 150px;
     height: 150px;
     top: 60px;
-    left: 210px;
-
-    img {
-        width: 100%;
-        height: 100%;
-    }
+    left: 150px;
 }
 
 .tituloBoasVindas {

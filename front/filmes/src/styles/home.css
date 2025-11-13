@@ -1,10 +1,65 @@
-.mainHome{
+@font-face {
+    font-family: 'Bonello';
+    src: url(../assets/fonts/bonello/Bonello-Regular.otf) format(truetype);
+}
+
+@font-face {
+    font-family: 'Retro British';
+    src: url(../assets/fonts/retro_british/RetroBritish-DemoVersion-Regular.otf) format(truetype);
+}
+
+.mainHome {
     padding-top: 30px;
     padding-bottom: 30px;
 }
 
-.dividv{
+.mainOfc {
     background-color: blue;
-    width: 100vh;
-    height: 20vh;
+    max-width: 194.8vh;
+    width: 100%;
+    height: 120vh;
+    padding-left: 72px;
+    padding-right: 73px;
+}
+
+.containerInfoHome {
+    margin-top: 60px;
+    padding-top: 20px;
+    background-color: var(--berry);
+    width: 100%;
+    height: 400px;
+    border-radius: 14px;
+}
+
+.containerLinks {
+    margin-top: 32px;
+    width: 100%;
+    height: 475px;
+    background-color: burlywood;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filmesNovos {
+    background-color: var(--tea);
+    width: 541px;
+    height: 450px;
+    border-radius: 14px;
+    padding-top: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.titleContainerNewMovies {
+    font-family: 'Retro British';
+    font-size: 25px;
+}
+
+.containerDecoracao {
+    width: 58%;
+    height: 475px;
+    background-image: url(../assets/img-comp/content-films1.png);
+    background-size: cover;
+    background-position: center;
 }

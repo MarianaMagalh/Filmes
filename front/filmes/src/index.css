@@ -2,3 +2,15 @@
     margin: 0px;
     padding: 0px;
 }
+
+:root{
+    --juice: #77204A;
+    --berry: #5AAED3;
+    --white: #fff;
+    --fruit: #D91C5C;
+    --tea: #B1D1A0;
+}
+
+img{
+    width: 100%;
+}

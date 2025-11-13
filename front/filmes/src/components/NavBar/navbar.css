@@ -1,0 +1,65 @@
+@font-face {
+    font-family: 'Bonello';
+    src: url(../assets/fonts/bonello/Bonello-Regular.otf) format(truetype);
+}
+
+@font-face {
+    font-family: 'Retro British';
+    src: url(../assets/fonts/retro_british/RetroBritish-DemoVersion-Regular.otf) format(truetype);
+}
+
+
+header{
+    width: 100%;
+}
+
+.allElements{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    z-index: 1;
+}
+
+.imgLogoNav{
+    width: 90px;
+    height: 90px;
+}
+
+.titleNav{
+    font-family: 'Bonello';
+    font-size: 45px;
+    font-weight: 500;
+    position: relative;
+    z-index: 2;
+    right: 170px;
+}
+
+ul{
+    background-color: var(--fruit);
+    padding-left: 19px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-right: 19px;
+    border-radius: 14px;
+    display: flex;
+    width: 400px;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+li{
+    list-style: none;
+    font-family: 'Retro British';
+    font-size: 18px;
+    color: var(--white);
+    font-weight: 100;
+    letter-spacing: 1px;
+}
+
+.imgPerfil{
+    width: 50px;
+    height: 50px;
+}

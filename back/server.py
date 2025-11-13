@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer # cria servidor HTTP 
 import json # importa para parse de JSON em requisições
 from controller import (  # Importa handlers
     handle_get_filmes, handle_get_filme_by_id, handle_post_register, handle_post_login,
-    handle_post_filme, handle_put_filme, handle_delete_filme
+    handle_post_filme, handle_put_filme, handle_delete_filme, handle_post_approve_movie
 )
 
 class FilmeHandler(BaseHTTPRequestHandler):
@@ -36,6 +36,8 @@ class FilmeHandler(BaseHTTPRequestHandler):
             status, body, content_type = handle_post_register(data)
         elif self.path == '/login':  # Login
             status, body, content_type = handle_post_login(data)
+        elif self.path == '/aprovacao_filme':
+            status, body, content_type = handle_post_approve_movie(data, self.headers)
         elif self.path == '/filmes':  # Adicionar filme
             status, body, content_type = handle_post_filme(data, self.headers)  # Passa headers para auth
         else:

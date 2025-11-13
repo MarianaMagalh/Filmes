@@ -2,12 +2,14 @@
 CREATE DATABASE filmes_db;
 USE filmes_db;
 
+
 CREATE TABLE usuario(
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
-    password VARCHAR(100)
+    email VARCHAR(100),
+    password VARCHAR(100),
+    role VARCHAR(20)
 );
-
 
 -- Tabela principal: pais
 CREATE TABLE pais (
@@ -131,3 +133,14 @@ CREATE TABLE filme_linguagem (
     FOREIGN KEY (id_filme) REFERENCES filme(id) ON DELETE CASCADE,
     FOREIGN KEY (id_linguagem) REFERENCES linguagem(id) ON DELETE CASCADE
 );
+
+
+-- Adicionar campo status à tabela filme (para 'pendente' ou 'aprovado')
+ALTER TABLE filme ADD COLUMN status VARCHAR(20) DEFAULT 'pendente';
+
+-- Unificar usuários: Dropar admin e ajustar usuario
+DROP TABLE admin;
+ALTER TABLE usuario ADD COLUMN nome VARCHAR(100), ADD COLUMN role VARCHAR(20) DEFAULT 'user';
+
+-- Inserir dados de exemplo (opcional, para testar)
+INSERT INTO usuario (nome, email, password, role) VALUES ('Admin User', 'admin@example.com', '$2b$12$hashedpassword', 'admin');  -- Hash uma senha real com bcrypt

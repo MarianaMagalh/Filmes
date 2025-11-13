@@ -1,216 +1,139 @@
-# arquivo sobre o banco de dados
-
-import mysql.connector
+import mysql.connector  # Para conectar ao MySQL
 import bcrypt  # Para hash de senhas
-import jwt  # Para gerar e verificar JWT
-import datetime  # Para definir expiração do token
+import jwt  # Para JWT
+import os  # Para chave secreta JWT
 
-# Configuração do banco de dados
+# Configuração do banco (ajuste credenciais)
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'senai',
+    'password': 'root',
     'database': 'filmes_db'
 }
 
-# Funçaõ que cria e retora uma conexão com o banco
-def get_connection():
+# Chave secreta para JWT (use variável de ambiente em produção)
+SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
+
+def get_db_connection():
+    """Conecta ao banco MySQL."""
     return mysql.connector.connect(**DB_CONFIG)
 
-
-def get_filmes(filtros = None):
-    # retorna uma lista de dicionários com informações completas de cada filme
-    
-    conn = get_connection() # cria conexão com o banco
-    cursor = conn.cursor(dictionary=True) # retorna resultados como dicionários
+def get_filmes(filtros=None):
+    """Busca filmes com filtros opcionais (titulo, ano, categoria). Retorna lista de dicionários."""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
     query = """
-        SELECT 
-            f.id, f.titulo, f.ano, f.sinopse, f.poster,  # Adicione sinopse, poster se existir
-            c.nome AS categoria, p.nome AS produtora
+        SELECT f.id, f.titulo, f.ano, f.sinopse, f.poster, f.status,
+               g.nome AS genero, p.nome AS produtora
         FROM filme f
-        LEFT JOIN categoria c ON f.id_categoria = c.id
+        LEFT JOIN genero g ON f.id_genero = g.id
         LEFT JOIN produtora p ON f.id_produtora = p.id
+        WHERE 1=1
     """
-    
     params = []
     if filtros:
-        conditions = []
         if 'titulo' in filtros:
-            conditions.append("f.titulo LIKE %s")
+            query += " AND f.titulo LIKE %s"
             params.append(f"%{filtros['titulo']}%")
         if 'ano' in filtros:
-            conditions.append("f.ano = %s")
+            query += " AND f.ano = %s"
             params.append(filtros['ano'])
         if 'categoria' in filtros:
-            conditions.append("c.nome = %s")
+            query += " AND f.id IN (SELECT id_filme FROM filme_categoria fc JOIN categoria c ON fc.id_categoria = c.id WHERE c.nome = %s)"
             params.append(filtros['categoria'])
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
     cursor.execute(query, params)
-    result = cursor.fetchall()
+    filmes = cursor.fetchall()
     conn.close()
-    return result
+    return filmes
 
-
-# Função para buscar um filme específico por ID
-def get_filme_by_id(id):
-    conn = get_connection()
+def get_filme_by_id(filme_id):
+    """Busca filme por ID, incluindo relacionamentos (atores, diretores, etc.)."""
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT f.*, c.nome AS categoria, p.nome AS produtora
-        FROM filme f
-        LEFT JOIN categoria c ON f.id_categoria = c.id
-        LEFT JOIN produtora p ON f.id_produtora = p.id
-        WHERE f.id = %s
-    """, (id,))  # Busca filme por ID
-    result = cursor.fetchone()  # Retorna um único resultado
+    # Filme principal
+    cursor.execute("SELECT * FROM filme WHERE id = %s", (filme_id,))
+    filme = cursor.fetchone()
+    if not filme:
+        conn.close()
+        return None
+    # Adicionar relacionamentos (ex.: atores)
+    cursor.execute("SELECT a.nome FROM ator a JOIN filme_ator fa ON a.id = fa.id_ator WHERE fa.id_filme = %s", (filme_id,))
+    filme['atores'] = [row['nome'] for row in cursor.fetchall()]
+    # Similar para diretores, categorias, etc. (adicione conforme necessário)
     conn.close()
-    return result  # Retorna dicionário do filme ou None
+    return filme
 
-
-def add_filme(titulo, ano, id_categoria, id_produtora, atores=None, diretores=None, categorias=None, linguagens=None, sinopse=None, poster=None):
-    # Insere filme e relacionamentos
-    # recebe dados básicos de filme e listas opcionais de IDs para relacionamentos
-    conn = get_connection()
+def add_filme(titulo, ano, id_produtora, id_genero, sinopse, poster, status, atores=None, diretores=None, categorias=None):
+    """Adiciona filme e relacionamentos. Retorna dados do filme inserido."""
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO filme (titulo, ano, id_produtora, id_categoria, sinopse, poster) VALUES (%s, %s, %s, %s, %s, %s)", 
-                   (titulo, ano, id_produtora, id_categoria, sinopse, poster))
-    filme_id = cursor.lastrowid# guarda o id do filme recém-inserido
-    
-    # Insere relacionamentos muitos-para-muitos 
+    cursor.execute("INSERT INTO filme (titulo, ano, sinopse, poster, id_genero, id_produtora, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                   (titulo, ano, sinopse, poster, id_genero, id_produtora, status))
+    filme_id = cursor.lastrowid
+    # Inserir relacionamentos (ex.: atores)
     if atores:
-        for ator_id in atores:
-            cursor.execute("INSERT INTO filmes_ator (id_filme, id_ator) VALUES (%s, %s)", (filme_id, ator_id))
-    if diretores:
-        for diretor_id in diretores:
-            cursor.execute("INSERT INTO filme_diretor (id_filme, id_diretor) VALUES (%s, %s)", (filme_id, diretor_id))
-    if categorias:
-        for cate_id in categorias:
-            cursor.execute("INSERT INTO filme_categoria (id_filme, id_categoria) VALUES (%s, %s)", (filme_id, cate_id))
-    if linguagens:
-        for lang_id in linguagens:
-            cursor.execute("INSERT INTO filme_linguagem (id_filme, id_linguagem) VALUES (%s, %s)", (filme_id, lang_id))
-
-    conn.commit() # confirma todas as transações
+        for ator_nome in atores:
+            cursor.execute("INSERT IGNORE INTO ator (nome) VALUES (%s)", (ator_nome,))  # IGNORE se já existe
+            cursor.execute("SELECT id FROM ator WHERE nome = %s", (ator_nome,))
+            ator_id = cursor.fetchone()[0]
+            cursor.execute("INSERT INTO filme_ator (id_filme, id_ator) VALUES (%s, %s)", (filme_id, ator_id))
+    # Similar para diretores e categorias (implemente se necessário)
+    conn.commit()
     conn.close()
-    return {"id": filme_id, "titulo": titulo, "ano": ano} # Retorna dados básicosdo filme
+    return {"id": filme_id, "titulo": titulo, "ano": ano}
 
-
-def update_filme(id, titulo, ano, id_produtora, id_categoria, atores=None, diretores=None, categorias=None, linguagens=None, sinopse=None, poster=None):
-    # Função para atualizar um filme existente pelo ID
-    # Limpando relacionamentos antigos e reinsere novos para simplicidade
-    conn = get_connection()
+def update_filme(filme_id, titulo, ano, id_produtora, id_genero, sinopse, poster, status):
+    """Atualiza filme."""
+    conn = get_db_connection()
     cursor = conn.cursor()
-    
-    # atualiza os campos principais do filme
-    cursor.execute("UPDATE filme SET titulo=%s, ano=%s, id_produtora=%s, id_categoria=%s, sinopse=%s, poster=%s WHERE id=%s", 
-                   (titulo, ano, id_produtora, id_categoria, sinopse, poster, id))
-    
-    # limpa e reinsere relacionamentos
-    cursor.execute("DELETE FROM filme_ator WHERE id_filme=%s", (id,))
-    cursor.execute("DELETE FROM filme_diretor WHERE id_filme=%s", (id,))
-
-    if atores:
-        for ator_id in atores:
-            cursor.execute("INERT INTO filme_ator (id_filme, id_ator) VALUES (%s, %s)", (id, ator_id))
-    
-    conn.commit() #confirma mudanças
-    conn.close() # fecha conexão
-    
-    
-def delete_filme(id):
-    # Função para excluir um filme pelo ID
-    # Os relacionamentos são deletados automaticamente devido ao CASCADE nas FKs
-    conn = get_connection()  # Abre conexão
-    cursor = conn.cursor()  # Cria cursor
-    cursor.execute("DELETE FROM filme WHERE id=%s", (id,))  # Deleta o filme
-    conn.commit()  # Confirma
-    conn.close()  # Fecha
-
-    
-def get_id_by_name(id):
-    # Função para buscar o ID de uma entidade pelo nome
-    # converte nomes em ids durante validações/inserções
-    conn = get_connection()
-    cursor = conn.cursor
-    cursor.execute("""
-        SELECT f.*, c.nome AS categoria, p.nome AS produtora
-        FROM filme f
-        LEFT JOIN categoria c ON f.id_categoria = c.id
-        LEFT JOIN produtora p ON f.id_produtora = p.id
-        WHERE f.id = %s
-    """, (id,))
-    result = cursor.fetchone() # busca um resultado
-    if result:
-        pass
+    cursor.execute("UPDATE filme SET titulo=%s, ano=%s, sinopse=%s, poster=%s, id_genero=%s, id_produtora=%s, status=%s WHERE id=%s",
+                   (titulo, ano, sinopse, poster, id_genero, id_produtora, status, filme_id))
+    conn.commit()
     conn.close()
-    return result
 
+def delete_filme(filme_id):
+    """Deleta filme (relacionamentos são deletados automaticamente por CASCADE)."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM filme WHERE id = %s", (filme_id,))
+    conn.commit()
+    conn.close()
 
-# Função para buscar ID de uma entidade (ex.: produtora, categoria) pelo nome
 def get_id_by_name(table, name):
-    conn = get_connection()
+    """Busca ID por nome em tabelas como produtora, categoria, etc."""
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f"SELECT id FROM {table} WHERE nome = %s", (name,))  # Query dinâmica por tabela
+    cursor.execute(f"SELECT id FROM {table} WHERE nome = %s", (name,))
     result = cursor.fetchone()
     conn.close()
-    return result[0] if result else None  # Retorna ID ou None
-# Funções para usuários (autenticação)
-SECRET_KEY = 'sua_chave_secreta_aqui'  # Chave secreta para JWT (mude para produção)
+    return result[0] if result else None
 
-
-# funções para inserir atores/diretores com gênero
-def add_ator(nome, id_genero):
-    conn = get_connection()
+def add_usuario(nome, email, senha, role):
+    """Adiciona usuário com senha hashed."""
+    hashed = bcrypt.hashpw(senha.encode(), bcrypt.gensalt())
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO ator (nome, id_genero) VALUES (%s, %s)", (nome, id_genero))
-    ator_id = cursor.lastrowid # guarda o id gerado
+    cursor.execute("INSERT INTO usuario (nome, email, password, role) VALUES (%s, %s, %s, %s)", (nome, email, hashed.decode(), role))
     conn.commit()
     conn.close()
-    return ator_id # retorna id para uso
 
-def add_director(nome, id_genero):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO diretor (nome, id_genero) VALUES (%s, %s)", (nome, id_genero))
-    diretor_id = cursor.lastrowid
-    conn.commit()
-    conn.close()
-    return diretor_id
-
-
- # Adiciona um usuário
-def add_usuario(nome, email, senha, role='user'):
-    hashed = bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode()  # Hash da senha
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO usuario (nome, email, senha, role) VALUES (%s, %s, %s, %s)", (nome, email, hashed, role))
-    usuario_id = cursor.lastrowid
-    conn.commit()
-    conn.close()
-    return usuario_id
-
-# Busca usuário por email
 def get_usuario_by_email(email):
-    conn = get_connection()
+    """Busca usuário por email."""
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM usuario WHERE email = %s", (email,))
-    result = cursor.fetchone()
+    user = cursor.fetchone()
     conn.close()
-    return result
+    return user
 
-# Gera JWT para usuário
-def generate_token(usuario):
-    payload = {
-        'id': usuario['id'],  # ID do usuário
-        'role': usuario['role'],  # Role (user ou admin)
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Expira em 1 hora
-    }
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # Codifica o token
+def generate_token(user):
+    """Gera JWT para usuário."""
+    payload = {"id": user['id'], "role": user['role']}
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-# Verifica JWT
 def verify_token(token):
+    """Verifica JWT e retorna payload."""
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=['HS256'])  # Decodifica e valida
-    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        return None  # Retorna None se inválido
+        return jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        return None

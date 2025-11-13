@@ -1,40 +1,54 @@
-import React, { createContext, useState, useEffect } from 'react';  // React hooks para estado e efeitos
-import jwtDecode from 'jwt-decode';  // Biblioteca para decodificar JWT
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useEffect } from 'react';
 
-export const AuthContext = createContext();  // Cria um contexto para compartilhar estado de autenticação em toda a app
+// Cria o contexto
+export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {  // Componente provedor do contexto
-  const [user, setUser] = useState(null);  // Estado para armazenar dados do usuário decodificado do JWT (ex.: {id, role})
-  const [loading, setLoading] = useState(true);  // Estado para indicar carregamento inicial (ex.: verificando token)
+// Provider que envolve o app
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(localStorage.getItem('token') || null);  // Token JWT
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);  // Info do user (ex.: {id, role})
 
-  useEffect(() => {  // Executa uma vez ao montar o componente
-    const token = localStorage.getItem('token');  // Pega token salvo no navegador
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);  // Decodifica o JWT para obter dados do usuário
-        setUser(decoded);  // Define o usuário no estado
-      } catch (error) {
-        console.error('Token inválido:', error);  // Loga erro se token for inválido
-        localStorage.removeItem('token');  // Remove token inválido
-      }
+  // Função para login: chama back-end, armazena token/user
+  const login = async (email, senha) => {
+    try {
+      const response = await fetch('http://localhost:8000/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+      if (!response.ok) throw new Error('Credenciais inválidas');
+      const data = await response.json();
+      setToken(data.token);
+      setUser({ role: data.role });  // Armazena role (expanda se precisar de mais info)
+      localStorage.setItem('token', data.token);  // Persiste no navegador
+      localStorage.setItem('user', JSON.stringify({ role: data.role }));
+    } catch (error) {
+      throw error;  // Lança erro para o componente Login lidar
     }
-    setLoading(false);  // Finaliza carregamento
-  }, []);  // Array vazio: executa apenas uma vez
-
-  const login = (token) => {  // Função para fazer login
-    localStorage.setItem('token', token);  // Salva token no localStorage
-    const decoded = jwtDecode(token);  // Decodifica e define usuário
-    setUser(decoded);
   };
 
-  const logout = () => {  // Função para fazer logout
-    localStorage.removeItem('token');  // Remove token
-    setUser(null);  // Limpa estado do usuário
+  // Função para logout: limpa estado e localStorage
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
-  // Fornece valores para componentes filhos via contexto
+  // Verifica se está logado (útil para rotas)
+  const isAuthenticated = !!token;
+
+  // Efeito para verificar token ao carregar (opcional, para persistência)
+  useEffect(() => {
+    if (token) {
+      // Opcional: Verificar se token ainda é válido chamando um endpoint (ex.: /verify)
+      // Por enquanto, assume válido se existir.
+    }
+  }, [token]);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
