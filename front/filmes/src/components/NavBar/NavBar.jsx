@@ -1,6 +1,10 @@
+import { Link } from 'react-router-dom'
+
 import Logo from '../../assets/imgs/Logo.png'
 import Perfil from '../../assets/imgs/iconPerfil.png'
+
 import './navbar.css'
+import '../../index.css'
 
 export default function NavBar() {
     return (
@@ -14,13 +18,16 @@ export default function NavBar() {
 
                 <nav>
                     <ul>
-                        <li>Home</li>
-                        <li>Filmes</li>
-                        <li>Adicionar Filmes</li>
+                        <li><Link to="/Home">Home</Link></li>
+                        <li><Link to="/AllFilmes">Filmes</Link></li>
+                        <li><Link to="/AddFilme">Adicionar Filmes</Link></li>
                         <li>
-                            <figure className='imgPerfil'>
-                                <img src={Perfil} alt="" />
-                            </figure>
+                            <Link to="/Perfil">
+                                <figure className='imgPerfil'>
+                                    <img src={Perfil} alt="" />
+                                </figure>
+
+                            </Link>
                         </li>
                     </ul>
                 </nav>

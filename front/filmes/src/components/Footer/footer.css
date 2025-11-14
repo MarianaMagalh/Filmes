@@ -1,0 +1,22 @@
+footer{
+    background-color: var(--fruit);
+    width: 100%;
+    height: 150px;
+    margin-top: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--white);
+}
+
+.infoFooter{
+    font-family: 'Retro British';
+    font-weight: 100;
+}
+
+.textInfoFooter{
+    font-family: 'Modern Sans';
+    font-size: 20px;
+
+}

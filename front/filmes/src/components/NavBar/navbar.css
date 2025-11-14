@@ -1,14 +1,3 @@
-@font-face {
-    font-family: 'Bonello';
-    src: url(../assets/fonts/bonello/Bonello-Regular.otf) format(truetype);
-}
-
-@font-face {
-    font-family: 'Retro British';
-    src: url(../assets/fonts/retro_british/RetroBritish-DemoVersion-Regular.otf) format(truetype);
-}
-
-
 header{
     width: 100%;
 }

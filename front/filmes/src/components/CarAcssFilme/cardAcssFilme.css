@@ -1,0 +1,44 @@
+.bg1 { 
+    background-image: url(../../assets/img-comp/card-filmes.png);
+    background-size: cover;
+    background-position: center; 
+}    
+.bg2 { 
+    background-image: url(../../assets/img-comp/card-filmes-verde.png);
+    background-size: cover;
+    background-position: center; 
+}    
+.bg3 { 
+    background-image: url(../../assets/img-comp/card-filmes-roxo.png);
+    background-size: cover;
+    background-position: center; 
+}      
+.bg4 { 
+    background-image: url(../../assets/img-comp/card-filmes-amarelo.png);
+    background-size: cover;
+    background-position: center;
+}   
+
+
+.btnColor1 { 
+    background-color: var(--butter); 
+} /* amarelo claro */
+.btnColor2 { 
+    background-color: var(--olive); 
+} /* verde amarelado claro */
+.btnColor3 { 
+    background-color: var(--iced); 
+} /* azul claro */
+.btnColor4 { 
+    background-color: var(--peach); 
+} /* laranja claro */
+
+
+
+.containerCardFilmes{
+    margin-top: 90px;
+    width: 326px;
+    height: 450px;
+}
+
+.
