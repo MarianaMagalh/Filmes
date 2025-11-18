@@ -1,0 +1,63 @@
+.containerInfoFilme {
+    margin-top: 136px;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.titlePagFilme {
+    font-family: 'Retro British';
+    font-size: 3rem;
+    margin-top: 50px;
+}
+
+.infoFilme {
+    background-color: var(--limon);
+    border: var(--olive) solid 5px;
+    width: 684px;
+    height: 630px;
+    border-radius: 14px;
+    padding-bottom: 64px;
+}
+
+.movieTitle {
+    font-family: 'Retro British';
+    font-size: 36px;
+    margin-left: 32px;
+    margin-top: 43px;
+}
+
+.conjuntoInfo{
+    display: flex;
+}
+
+.info{
+    margin-left: 55px;
+    margin-bottom: 38px;
+}
+
+.topico{
+    font-family: 'Retro British';
+    font-size: 24px;
+}
+
+.txtTopico{
+    font-family: 'Modern Sans';
+    font-size: 24px;
+}
+
+.paragrafo{
+    width: 260px;
+}
+
+.btnEditar{
+    width: 247px;
+    height: 85px;
+    border-radius: 14px;
+    border: none;
+    font-family: 'Retro British';
+    font-size: 32px;
+    background-color: var(--berry);
+    margin-top: 65px;
+}

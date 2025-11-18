@@ -25,6 +25,7 @@
     --berry: #5AAED3;
     --white: #fff;
     --fruit: #D91C5C;
+    --white-font: #FAFAFA;
     --tea: #B1D1A0;
     --fundo: #FFEFEA;
     --sunset: #FE9947;
@@ -35,6 +36,9 @@
     --butter: #F0D385;
     --iced: #BFD3EB;
     --peach: #F9AD97;
+    --limon: #FEFDCA;
+    --light-blue: #F5F9FF;
+    --gum: #FF87B4;
 }
 
 img{
@@ -55,9 +59,12 @@ a{
 
 .formatacao {
     margin-top: 60px;
-    max-width: 194.8vh;
-    width: 100%;
+    width: 93.5rem;
     height: 100%;
     padding-left: 72px;
     padding-right: 73px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }

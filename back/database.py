@@ -50,16 +50,26 @@ def get_filme_by_id(filme_id):
     """Busca filme por ID, incluindo relacionamentos (atores, diretores, etc.)."""
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    # Filme principal
-    cursor.execute("SELECT * FROM filme WHERE id = %s", (filme_id,))
+    
+    query = """
+        SELECT f.*, 
+               g.nome AS genero, 
+               p.nome AS produtora
+        FROM filme f
+        LEFT JOIN genero g ON f.id_genero = g.id
+        LEFT JOIN produtora p ON f.id_produtora = p.id
+        WHERE f.id = %s
+    """
+    cursor.execute(query, (filme_id,))
     filme = cursor.fetchone()
+    
     if not filme:
         conn.close()
         return None
-    # Adicionar relacionamentos (ex.: atores)
+    
     cursor.execute("SELECT a.nome FROM ator a JOIN filme_ator fa ON a.id = fa.id_ator WHERE fa.id_filme = %s", (filme_id,))
     filme['atores'] = [row['nome'] for row in cursor.fetchall()]
-    # Similar para diretores, categorias, etc. (adicione conforme necessário)
+
     conn.close()
     return filme
 

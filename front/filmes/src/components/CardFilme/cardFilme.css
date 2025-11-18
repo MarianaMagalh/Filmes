@@ -1,0 +1,34 @@
+.bg1 { 
+    background-image: url(../../assets/img-comp/card-filmes.png);
+    background-size: cover;
+    background-position: center; 
+}    
+.bg2 { 
+    background-image: url(../../assets/img-comp/card-filmes-verde.png);
+    background-size: cover;
+    background-position: center; 
+}    
+.bg3 { 
+    background-image: url(../../assets/img-comp/card-filmes-roxo.png);
+    background-size: cover;
+    background-position: center; 
+}      
+.bg4 { 
+    background-image: url(../../assets/img-comp/card-filmes-amarelo.png);
+    background-size: cover;
+    background-position: center;
+}   
+
+
+.containerCard{
+    width: 590px;
+    height: 810px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgFilmePoster{
+    width: 450px;
+    height: 650px;
+}

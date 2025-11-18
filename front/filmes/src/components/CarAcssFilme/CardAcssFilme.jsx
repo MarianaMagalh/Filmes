@@ -1,35 +1,39 @@
+import { Link } from 'react-router-dom'
+import React from 'react';
+
 import './cardAcssFilme.css'
 import '../../index.css'
 
-export default function CardAcssFilme() {
+export default function CardAcssFilme({ filme, index }) {
   /* LÓGICA PARA MUDAR A IMG DOS CARD´S
      A CADA NOVO FILME ADICIONADO */
-  const movies = [
-    { id: 1, title: "Longlegs" },
-    { id: 2, title: "Your Vains" },
-    { id: 3, title: "Little Women" },
-    { id: 4, title: "The Substance" },
-    { id: 5, title: "Mickey 17" },
-    { id: 6, title: "Central" },
-  ];
-
+  // Isso aplica os fundos decorativos (card-filmes.png, card-filmes-verde.png)
   const backgrounds = ["bg1", "bg2", "bg3", "bg4"];
   const buttonColors = ["btnColor1", "btnColor2", "btnColor3", "btnColor4"];
 
-  return (
-    <div>
-      {movies.map((movie, index) => {
-        const variationIndex = index % 4;
-        const bgClass = backgrounds[variationIndex];
-        const btnClass = buttonColors[variationIndex];
+  const variationIndex = index % 4;
+  const bgClass = backgrounds[variationIndex];
+  const btnClass = buttonColors[variationIndex];
 
-        return (
-          <div key={movie.id} className={`containerCardFilmes ${bgClass}`}>
-            
-            <button className={btnClass}>ACESSAR</button>
-          </div>
-        );
-      })}
+  // 2. URL do poster (com uma imagem padrão de fallback)
+  const posterUrl = filme.poster || 'https://via.placeholder.com/250x350?text=Sem+Poster';
+
+  return (
+    <div className={`containerCardFilmes ${bgClass}`}>
+
+      <figure className="posterFilmeImg">
+        <img
+          src={posterUrl}
+          alt={`Poster do filme ${filme.titulo}`}
+        />
+      </figure>
+
+
+      {/* O Link agora usa o ID real do filme */}
+      <Link to={`/SeeFilmes/${filme.id}`}>
+        <button className={btnClass}>ACESSAR</button>
+      </Link>
+
     </div>
   );
 }

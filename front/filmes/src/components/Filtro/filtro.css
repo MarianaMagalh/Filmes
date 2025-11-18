@@ -49,6 +49,8 @@
 }
 
 .cardSelecionaFiltro{
+    cursor: pointer;
+    transition: all 0.2s ease;
     width: 196px;
     height: 46px;
     background-color: var(--white);
@@ -57,6 +59,34 @@
     align-items: center;
     justify-content: center;
     margin-right: 10px;
+}
+
+/* SUAS CORES PERSONALIZADAS */
+
+.cardSelecionaFiltro.juice {
+    background-color: var(--white);
+    border-color: var(--juice);
+    color: var(--juice);
+}
+
+.cardSelecionaFiltro.berry {
+    background-color: var(--white);
+    border-color: var(--berry);
+    color: var(--berry);
+    /* O texto branco pode ficar ruim aqui? Se sim: */
+    /* color: #000; */
+}
+
+.cardSelecionaFiltro.fruit {
+    background-color: var(--white);
+    border-color: var(--fruit);
+    color: var(--fruit)
+}
+
+.cardSelecionaFiltro.dry {
+    background-color: var(--white);
+    border-color: var(--dry);
+    color: var(--dry);
 }
 
 .textFiltro1{

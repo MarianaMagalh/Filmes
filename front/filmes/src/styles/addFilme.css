@@ -1,0 +1,72 @@
+.titlePag{
+    font-family: 'Retro British';
+    font-size: 36px;
+}
+
+.containerAddEdit{
+    margin-top: 136px;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.formFilme{
+    width: 727px;
+    height: 789px;
+}
+
+.labelFilme{
+    font-size: 24px;
+    font-family: 'Retro British';
+}
+
+.inputFilme{
+    width: 667px;
+    height: 52px;
+    border-radius: 14px;
+    padding-left: 50px;
+    background-color: var(--light-blue);
+    border: var(--berry) solid 5px;
+    font-family: 'Modern Sans';
+    margin-bottom: 32px;
+    font-size: 20px;
+}
+
+.alinhaBotao{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.btnCance{
+    width: 179px;
+    height: 56px;
+    border-radius: 14px;
+    border: none;
+    font-size: 24px;
+    font-family: 'Retro British'; 
+    background-color: var(--gum);   
+}
+
+
+.btnProximo{
+    width: 179px;
+    height: 56px;
+    border-radius: 14px;
+    border: none;
+    font-size: 24px;
+    font-family: 'Retro British';
+    background-color: var(--tea);
+}
+
+.input-error {
+    border-color: red;
+}
+.error-message {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: -10px;
+    display: block;
+}

@@ -1,8 +1,8 @@
-// src/context/AuthContext.jsx
+// src/context/.jsx
 import React, { createContext, useState, useEffect } from 'react';
 
 // Cria o contexto
-export const AuthContext = createContext();
+export const  = createContext();
 
 // Provider que envolve o app
 export const AuthProvider = ({ children }) => {
@@ -48,8 +48,8 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated }}>
+    <.Provider value={{ token, user, login, logout, isAuthenticated }}>
       {children}
-    </AuthContext.Provider>
+    </.Provider>
   );
 };

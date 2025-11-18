@@ -21,24 +21,54 @@
 
 
 .btnColor1 { 
-    background-color: var(--butter); 
+    background-color: var(--butter);
+    font-family: 'Retro British';
+    font-size: 1.7rem;
+    border: 0px;
+    border-radius: 14px;
+    width: 150px; 
+    padding: 5px;
 } /* amarelo claro */
 .btnColor2 { 
-    background-color: var(--olive); 
+    background-color: var(--olive);
+    font-family: 'Retro British';
+    font-size: 1.7rem;
+    border: 0px;
+    border-radius: 14px;
+    width: 150px; 
+    padding: 5px;
 } /* verde amarelado claro */
 .btnColor3 { 
-    background-color: var(--iced); 
+    background-color: var(--iced);
+    font-family: 'Retro British';
+    font-size: 1.7rem;
+    border: 0px;
+    border-radius: 14px;
+    width: 150px; 
+    padding: 5px;
 } /* azul claro */
 .btnColor4 { 
-    background-color: var(--peach); 
+    background-color: var(--peach);
+    font-family: 'Retro British';
+    font-size: 1.7rem;
+    border: 0px;
+    border-radius: 14px;
+    width: 150px; 
+    padding: 5px;
 } /* laranja claro */
-
 
 
 .containerCardFilmes{
     margin-top: 90px;
     width: 326px;
     height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.
+.posterFilmeImg{
+    width: 250px;
+    height: 350px;
+    object-fit: cover;
+}

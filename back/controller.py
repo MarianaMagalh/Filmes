@@ -1,3 +1,4 @@
+import bcrypt
 import json
 from database import (
     get_filmes, add_filme, update_filme, delete_filme, get_filme_by_id, get_id_by_name,
