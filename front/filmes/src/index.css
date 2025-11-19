@@ -39,6 +39,7 @@
     --limon: #FEFDCA;
     --light-blue: #F5F9FF;
     --gum: #FF87B4;
+    --sun: #F9C130;
 }
 
 img{
@@ -59,7 +60,7 @@ a{
 
 .formatacao {
     margin-top: 60px;
-    width: 93.5rem;
+    width: 94.21%;
     height: 100%;
     padding-left: 72px;
     padding-right: 73px;

@@ -33,7 +33,6 @@ ul{
     padding-right: 19px;
     border-radius: 14px;
     display: flex;
-    width: 400px;
     justify-content: space-between;
     align-items: center;
 
@@ -42,9 +41,12 @@ ul{
 li{
     list-style: none;
     font-family: 'Retro British';
-    font-size: 18px;
+    font-size: 19px;
+    font-weight: 100;
     color: var(--white-font);
     font-weight: 100;
+    margin-left: 20px;
+    margin-right: 20px;
     letter-spacing: 1px;
 }
 

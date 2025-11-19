@@ -1,0 +1,115 @@
+/* O container principal (o retângulo branco) */
+.profile-menu-container {
+    position: absolute;
+    top: 80px; /* Ajuste para ficar logo abaixo do NavBar */
+    right: 20px; /* Alinhado à direita */
+    width: 280px;
+    background-color: white; /* Fundo branco */
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 20px;
+    z-index: 1000; /* Para ficar em cima de tudo */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* O Ícone grande */
+.profile-icon-large img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* O Texto "ADMIN" */
+.profile-role {
+    color: #D91C5C; /* Aquele rosa escuro do seu tema */
+    font-family: 'Retro British', sans-serif; /* Sua fonte */
+    font-size: 1.5rem;
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* Os Links (Botões coloridos) */
+.profile-links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-item {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Retro British', serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: black; /* Cor do texto */
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+    
+    /* Se quiser bordas arredondadas como no print */
+    /* border-radius: 8px; */ 
+}
+
+.menu-item:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
+}
+
+/* --- ESTILOS DOS FUNDOS (Substitua background-color por suas imagens) --- */
+
+.item-pink-pattern {
+    background-color: #FF69B4; 
+    /* background-image: url(../../assets/patterns/pink-dots.png); */
+    color: white; /* Se o fundo for escuro */
+}
+
+.item-yellow-pattern {
+    background-color: #FFD700;
+    /* background-image: url(../../assets/patterns/yellow-check.png); */
+}
+
+.item-green-pattern {
+    background-color: #9ACD32;
+    /* background-image: url(../../assets/patterns/green-check.png); */
+}
+
+.item-check-pattern {
+    background-color: #87CEEB;
+}
+
+/* Botão Sair (Rosa Escuro no final) */
+.btn-logout {
+    background-color: #D91C5C; 
+    color: white;
+    margin-top: 10px;
+}
+
+/* ... (resto do CSS igual) ... */
+
+/* O Nome do Usuário (Grande e Rosa) */
+.profile-name {
+    color: #D91C5C; 
+    font-family: 'Retro British', sans-serif;
+    font-size: 1.5rem;
+    margin: 10px 0 5px 0; /* Margem ajustada */
+    text-align: center;
+    text-transform: uppercase; /* Deixa o nome em MAIÚSCULO */
+}
+
+/* A Tag do Cargo (Pequena e cinza) */
+.profile-role-tag {
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}

@@ -1,35 +1,45 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import NavBar from '../../components/NavBar/NavBar'; // Seu NavBar
-import '../../styles/homeAdmin.css'; // Você precisará criar esse CSS para as 3 colunas
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import NavAdmin from '../../components/NavAdmin/NavAdmin'
+import GiraGira from '../../components/GiraGira/GiraGira'
+
+import '../../styles/homeAdmin.css'
+import '../../index.css'
+import Footer from '../../components/Footer/Footer'
 
 export default function HomeAdmin() {
     return (
         <main className='mainPadrao'>
+            <GiraGira />
+            
             <div className='formatacao'>
-                <NavBar />
+                <div className='containerInfoHome'>
+                    <NavAdmin />
+                </div>
                 
-                <h2 className='titlePage'>Painel Administrativo</h2>
-
-                <div className="admin-dashboard-container">
+                
+                <div className="adminContainer">
                     {/* Coluna 1: Adicionar Filmes */}
-                    <Link to="/AddFilme" className="admin-card card-laranja">
+                    <Link to="/AddFilme" className="adminCard cardLaranja">
                         <h3>ADICIONAR FILMES</h3>
                         <p>Cadastre novos filmes no sistema</p>
                     </Link>
 
                     {/* Coluna 2: Validar Filmes (Onde ele aprova) */}
-                    <Link to="/admin/validacao" className="admin-card card-rosa">
+                    <Link to="/validacao" className="adminCard cardRosa">
                         <h3>VALIDAR NOVOS FILMES</h3>
                         <p>Aprove ou rejeite sugestões</p>
                     </Link>
 
                     {/* Coluna 3: Listar/Deletar Filmes */}
-                    <Link to="/AllFilmes" className="admin-card card-amarelo">
+                    <Link to="/AllFilmes" className="adminCard cardAmarelo">
                         <h3>DELETAR FILMES</h3>
                         <p>Visualize e gerencie o catálogo</p>
                     </Link>
                 </div>
+
+                <Footer />
             </div>
         </main>
     );
