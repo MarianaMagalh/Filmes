@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react' // Removemos useState pois não é necessário aqui
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -7,22 +7,18 @@ import IconPerfil from '../../assets/imgs/IconPerfil.png'
 import '../../index.css'
 import './perfil.css'
 
-
-export default function Perfil(){
-    // Estado para controlar se o menu está aberto ou fechado
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-    };
-
-
+// 1. Recebemos 'onClose' como prop vinda do NavBar
+export default function Perfil({ onClose }){
+    
+    // REMOVIDO: O estado 'isMenuOpen' fica no NavBar, não aqui inside.
+    
     const { logout, isAdmin, authData } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
         navigate('/'); 
+        // Verifica se onClose existe antes de chamar
         if (onClose) onClose();
     };
 
@@ -36,12 +32,10 @@ export default function Perfil(){
                         <img src={IconPerfil} alt="Perfil" />
                     </div>
                     
-                    {/* AQUI ESTÁ A MUDANÇA: Mostra o Nome Dinâmico */}
                     <h3 className="profile-name">
                         {authData.name || 'Usuário'} 
                     </h3>
                     
-                    {/* Opcional: Mostrar o cargo pequeno embaixo */}
                     <span className="profile-role-tag">
                         {isAdmin ? 'Administrador' : 'Membro'}
                     </span>
@@ -58,12 +52,10 @@ export default function Perfil(){
                         FILMES
                     </Link>
 
-                    {/* Todo mundo pode ver a página de adicionar (mas o status vai como pendente) */}
                     <Link to="/AddFilme" className="menu-item item-green-pattern" onClick={onClose}>
                         ADICIONAR FILMES
                     </Link>
                     
-                    {/* LÓGICA DE PROTEÇÃO: Só Admin vê este botão */}
                     {isAdmin && (
                         <Link to="/admin/validacao" className="menu-item item-check-pattern" onClick={onClose}>
                             VALIDAÇÃO

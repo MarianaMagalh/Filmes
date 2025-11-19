@@ -1,12 +1,17 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Logo from '../../assets/imgs/Logo.png'
-import Perfil from '../../assets/imgs/iconPerfil.png'
+import IconePerfil from '../../assets/imgs/iconPerfil.png' 
+
+import Perfil from '../PerfilUser/Perfil'
 
 import './navbar.css'
 import '../../index.css'
 
 export default function NavBar() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <header>
             <div className='allElements'>
@@ -21,13 +26,20 @@ export default function NavBar() {
                         <li><Link to="/Home">Home</Link></li>
                         <li><Link to="/AllFilmes">Filmes</Link></li>
                         <li><Link to="/AddFilme">Adicionar Filmes</Link></li>
-                        <li>
-                            <Link to="/Perfil">
-                                <figure className='imgPerfil'>
-                                    <img src={Perfil} alt="" />
+                    
+                        <li style={{ position: 'relative' }}>
+                            
+                            <button className='imgPerfil' onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                                <figure>
+                                    <img src={IconePerfil} alt="Ícone de Perfil" />
                                 </figure>
+                            </button>
 
-                            </Link>
+                            {/* Renderiza o Componente Perfil */}
+                            {isMenuOpen && (
+                                <Perfil onClose={() => setIsMenuOpen(false)} />
+                            )}
+
                         </li>
                     </ul>
                 </nav>

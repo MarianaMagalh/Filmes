@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 
-import NavBar from '../../components/NavBar/NavBar'
+import NavAdmin from '../../components/NavAdmin/NavAdmin'
 import GiraGira from '../../components/GiraGira/GiraGira'
 import CardValidacao from '../../components/CardValidacao/CardValidacao'
 
@@ -80,7 +80,7 @@ export default function ValidacaoFilmes() {
         <main className='mainPadrao'>
             <GiraGira />
             <div className='formatacao'>
-                <NavBar />
+                <NavAdmin />
                 <h2 className='titlePage'>Validação de Filmes</h2>
 
                 <div className="filmes-grid-container">

@@ -7,7 +7,7 @@ import os  # Para chave secreta JWT
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'root',
+    'password': '',
     'database': 'filmes_db'
 }
 

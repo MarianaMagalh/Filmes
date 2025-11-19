@@ -1,12 +1,17 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Logo from '../../assets/imgs/Logo.png'
-import Perfil from '../../assets/imgs/iconPerfil.png'
+import IconePerfil from '../../assets/imgs/iconPerfil.png'
+
+import Perfil from '../PerfilUser/Perfil'
 
 import '../NavBar/navbar.css'
 import '../../index.css'
 
 export default function NavAdmin() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <header>
             <div className='allElements'>
@@ -22,13 +27,19 @@ export default function NavAdmin() {
                         <li><Link to="/AllFilmes">Filmes</Link></li>
                         <li><Link to="/AddFilme">Adicionar Filmes</Link></li>
                         <li><Link to='/validacao'>Validar Filmes</Link></li>
-                        <li>
-                            <Link to="/Perfil">
-                                <figure className='imgPerfil'>
-                                    <img src={Perfil} alt="" />
-                                </figure>
+                        <li style={{ position: 'relative' }}>
 
-                            </Link>
+                            <button className='imgPerfil' onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                                <figure>
+                                    <img src={IconePerfil} alt="Ícone de Perfil" />
+                                </figure>
+                            </button>
+
+                            {/* Renderiza o Componente Perfil */}
+                            {isMenuOpen && (
+                                <Perfil onClose={() => setIsMenuOpen(false)} />
+                            )}
+
                         </li>
                     </ul>
                 </nav>
