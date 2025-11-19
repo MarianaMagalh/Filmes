@@ -26,49 +26,66 @@
     font-size: 1.7rem;
     border: 0px;
     border-radius: 14px;
-    width: 150px; 
-    padding: 5px;
+    padding: 10px;
 } /* amarelo claro */
+
 .btnColor2 { 
     background-color: var(--olive);
     font-family: 'Retro British';
     font-size: 1.7rem;
     border: 0px;
     border-radius: 14px;
-    width: 150px; 
     padding: 5px;
 } /* verde amarelado claro */
+
 .btnColor3 { 
     background-color: var(--iced);
     font-family: 'Retro British';
     font-size: 1.7rem;
     border: 0px;
     border-radius: 14px;
-    width: 150px; 
     padding: 5px;
 } /* azul claro */
+
 .btnColor4 { 
     background-color: var(--peach);
     font-family: 'Retro British';
     font-size: 1.7rem;
     border: 0px;
     border-radius: 14px;
-    width: 150px; 
     padding: 5px;
 } /* laranja claro */
 
 
 .containerCardFilmes{
     margin-top: 90px;
-    width: 326px;
-    height: 450px;
+    width: 354px;
+    height: 430px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     display: flex;
     align-items: center;
     justify-content: space-around;
+    flex-direction: column;
 }
 
 .posterFilmeImg{
-    width: 250px;
-    height: 350px;
+    width: 220px;
+    height: 320px;
     object-fit: cover;
+}
+
+.botoesValidacao{
+    width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.btnAcao{
+    width: 68px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

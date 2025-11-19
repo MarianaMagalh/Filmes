@@ -68,3 +68,7 @@ a{
     justify-content: center;
     flex-direction: column;
 }
+
+button{
+    cursor: pointer;
+}

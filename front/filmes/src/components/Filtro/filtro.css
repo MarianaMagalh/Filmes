@@ -61,7 +61,7 @@
     margin-right: 10px;
 }
 
-/* SUAS CORES PERSONALIZADAS */
+
 
 .cardSelecionaFiltro.juice {
     background-color: var(--white);
@@ -73,8 +73,6 @@
     background-color: var(--white);
     border-color: var(--berry);
     color: var(--berry);
-    /* O texto branco pode ficar ruim aqui? Se sim: */
-    /* color: #000; */
 }
 
 .cardSelecionaFiltro.fruit {
@@ -106,4 +104,52 @@
 .bi-funnel-fill{
     width: 40px;
     height: 40px;
+}
+
+
+
+
+.btnFiltro {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color); 
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.btnFiltro:hover {
+    transform: scale(1.1);
+}
+
+.btnFiltro.active {
+    color: var(--fruit); 
+}
+
+/* Container do Menu de Sugestões */
+.menuSugestoes {
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    width: 100%;
+    animation: slideDown 0.3s ease-out;
+}
+
+.tituloSugestoes {
+    font-family: 'SeuFonte', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.listaSugestoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Animação suave ao abrir */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

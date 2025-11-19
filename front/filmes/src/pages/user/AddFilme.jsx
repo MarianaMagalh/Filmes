@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 
@@ -16,99 +16,135 @@ const API_URL = 'http://localhost:8000';
 
 export default function AddFilme() {
     const [currentStep, setCurrentStep] = useState(1);
-    const { authData } = useAuth(); // Pega o token e dados de autenticação
+    const { authData } = useAuth(); 
+    
+    // 1. ESTADO (Nomes novos)
     const [formData, setFormData] = useState({
-        // Etapa 1
-        poster: '', nomeDoFilme: '', tempoDeDuracao: '', anoDeLancamento: '',
-        produtora: '', diretor: '',
+        poster: '',
+        nomeFilme: '',    // CORRETO
+        duracao: '',      // CORRETO
+        anoLancamento: '',// CORRETO
+        produtora: '', 
+        diretor: '',
         // Etapa 2
-        linguagem: '', pais: '', genero: '', atores: '', sinopse: '',
+        linguagem: '', 
+        pais: '', 
+        genero: '', 
+        atores: '', 
+        sinopse: '',
     });
 
     const [errors, setErrors] = useState({});
 
-    // Função genérica para atualizar qualquer campo do formulário
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevData => ({ ...prevData, [name]: value }));
-        
-        // Limpa o erro específico desse campo ao digitar
+
         if (errors[name]) {
             setErrors(prevErrors => ({ ...prevErrors, [name]: null }));
         }
     };
 
-    // Função para avançar (apenas se a Etapa 1 estiver completa)
+    // 2. VALIDAÇÃO CORRIGIDA (Usa os nomes novos)
+    const validateForm = (step) => {
+        const newErrors = {};
+
+        if (step === 1) {
+            // CORRIGIDO: nomeDoFilme -> nomeFilme
+            if (!formData.nomeFilme) newErrors.nomeFilme = "O nome do filme é obrigatório.";
+            
+            // CORRIGIDO: anoDeLancamento -> anoLancamento
+            if (!formData.anoLancamento) newErrors.anoLancamento = "O ano é obrigatório.";
+            else if (isNaN(parseInt(formData.anoLancamento))) newErrors.anoLancamento = "O ano deve ser um número.";
+            
+            if (!formData.produtora) newErrors.produtora = "A produtora é obrigatória.";
+            
+            // CORRIGIDO: Adicionei validação para duração e diretor que estavam faltando no seu check
+            if (!formData.duracao) newErrors.duracao = "A duração é obrigatória.";
+            if (!formData.diretor) newErrors.diretor = "O diretor é obrigatório.";
+        }
+
+        if (step === 2) {
+            if (!formData.genero) newErrors.genero = "O gênero é obrigatório.";
+            if (!formData.sinopse) newErrors.sinopse = "A sinopse é obrigatória.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const nextStep = () => {
-        // Só avança para a etapa 2 se a etapa 1 for válida
-        if (validateForm(1)) { 
+        if (validateForm(1)) {
             setCurrentStep(2);
         } else {
-            console.log("Validação da Etapa 1 falhou.", errors);
+            console.log("Validação falhou:", errors);
         }
     };
 
     const prevStep = () => setCurrentStep(1);
 
-
-    // FUNÇÃO CHAVE: CONEXÃO COM O BACKEND PYTHON
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 1. Valida ambas as etapas antes de enviar
         const isStep1Valid = validateForm(1);
         const isStep2Valid = validateForm(2);
 
         if (!isStep1Valid || !isStep2Valid) {
             alert("Existem erros no formulário. Por favor, corrija-os.");
-            return; // Impede o envio
+            return; 
         }
 
-        // 2. Transforma os dados para o formato esperado pela API
-        const atoresList = formData.atores 
-            ? formData.atores.split(',').map(ator => ator.trim()).filter(ator => ator) // Transforma "Ator 1, Ator 2" em ["Ator 1", "Ator 2"] e remove vazios
-            : []; // Garante que seja um array vazio se o campo estiver vazio
-        
+        const atoresList = formData.atores
+            ? formData.atores.split(',').map(ator => ator.trim()).filter(ator => ator) 
+            : [];
+
+        // 3. ENVIO PARA API CORRIGIDO (Mapeia nomes novos para a API)
         const dadosParaAPI = {
-            titulo: formData.nomeDoFilme,
-            ano: parseInt(formData.anoDeLancamento), // Garante que o ano seja um número
-            produtora: formData.produtora, 
+            titulo: formData.nomeFilme,           // CORRIGIDO: nomeDoFilme -> nomeFilme
+            ano: parseInt(formData.anoLancamento),// CORRIGIDO: anoDeLancamento -> anoLancamento
+            tempoDeDuracao: formData.duracao,     // Adicionado
+            produtora: formData.produtora,
+            diretor: formData.diretor,            // Adicionado
             genero: formData.genero,
             sinopse: formData.sinopse,
             poster: formData.poster,
-            atores: atoresList, 
-            // Adicione os outros campos: diretor, linguagem, pais, tempoDeDuracao
+            atores: atoresList,
+            linguagem: formData.linguagem,
+            pais: formData.pais
         };
 
-        // 3. Lógica de Fetch (como antes)
         try {
             const response = await fetch(`${API_URL}/filmes`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authData.token}`, 
+                    'Authorization': `Bearer ${authData.token}`,
                 },
                 body: JSON.stringify(dadosParaAPI),
             });
-            
-            // ... (resto do tratamento de resposta e erro do fetch) ...
-            
+
+            const data = await response.json();
+
             if (!response.ok) {
-                 const data = await response.json();
-                 throw new Error(data.error || 'Falha na requisição.');
+                throw new Error(data.error || 'Falha na requisição.');
             }
 
             alert("Filme adicionado com sucesso!");
-            setCurrentStep(1); // Volta para a etapa 1
-            setFormData({}); // Limpa o formulário
+            
+            // Resetar formulário
+            setCurrentStep(1);
+            setFormData({
+                poster: '', nomeFilme: '', duracao: '', anoLancamento: '',
+                produtora: '', diretor: '', linguagem: '', pais: '', 
+                genero: '', atores: '', sinopse: '',
+            });
 
         } catch (err) {
             console.error('Erro ao adicionar filme:', err);
             alert('Erro ao enviar filme: ' + err.message);
         }
     };
-    
-    // Renderiza o componente da etapa correta
+
     const renderStep = () => {
         if (currentStep === 1) {
             return (
@@ -116,7 +152,7 @@ export default function AddFilme() {
                     formData={formData}
                     handleChange={handleChange}
                     nextStep={nextStep}
-                    errors={errors} // NOVO: Passando os erros
+                    errors={errors}
                 />
             );
         } else {
@@ -125,36 +161,11 @@ export default function AddFilme() {
                     formData={formData}
                     handleChange={handleChange}
                     prevStep={prevStep}
-                    handleSubmit={handleSubmit} 
-                    errors={errors} // NOVO: Passando os erros
+                    handleSubmit={handleSubmit}
+                    errors={errors}
                 />
             );
         }
-    };
-
-    // Valida os campos
-    const validateForm = (step) => {
-        const newErrors = {};
-        
-        // Validação da Etapa 1 (Conforme o Figma)
-        if (step === 1) {
-            if (!formData.nomeDoFilme) newErrors.nomeDoFilme = "O nome do filme é obrigatório.";
-            if (!formData.anoDeLancamento) newErrors.anoDeLancamento = "O ano é obrigatório.";
-            else if (isNaN(parseInt(formData.anoDeLancamento))) newErrors.anoDeLancamento = "O ano deve ser um número.";
-            if (!formData.produtora) newErrors.produtora = "A produtora é obrigatória.";
-            // Adicione outras validações da Etapa 1 aqui (Tempo, Diretor, Poster...)
-        }
-
-        // Validação da Etapa 2 (Conforme o Figma)
-        if (step === 2) {
-            if (!formData.genero) newErrors.genero = "O gênero é obrigatório.";
-            if (!formData.sinopse) newErrors.sinopse = "A sinopse é obrigatória.";
-            // Adicione outras validações da Etapa 2 aqui (Linguagem, País, Atores...)
-        }
-
-        setErrors(newErrors);
-        // Retorna true se não houver erros (Object.keys(newErrors).length === 0)
-        return Object.keys(newErrors).length === 0;
     };
 
     return (
@@ -166,13 +177,15 @@ export default function AddFilme() {
                 <h2 className='titlePag'>Adicionar (Etapa {currentStep}/2)</h2>
 
                 <div className='containerAddEdit'>
-                    <CardFilme />
+                    <CardFilme
+                        filme={formData}        
+                        key={formData.poster}   
+                    />
 
                     {renderStep()}
                 </div>
 
                 <Footer />
-
             </div>
         </main>
     )

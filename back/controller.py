@@ -2,7 +2,8 @@ import bcrypt
 import json
 from database import (
     get_filmes, add_filme, update_filme, delete_filme, get_filme_by_id, get_id_by_name,
-    add_usuario, get_usuario_by_email, generate_token, verify_token, get_db_connection
+    add_usuario, get_usuario_by_email, generate_token, verify_token, get_db_connection,
+    get_or_create_id
 )
 
 ultimo_filme_inserido = None
@@ -57,16 +58,22 @@ def handle_post_register(data):
 
 def handle_post_filme(data, headers):
     payload, status, body, content_type = require_auth(headers)
+    
     if status:
         return status, body, content_type
+    
     required = ['titulo', 'ano', 'produtora', 'genero']
     if not all(key in data for key in required):
         return 400, json.dumps({"error": "Campos obrigatórios"}), 'application/json'
-    id_produtora = get_id_by_name('produtora', data['produtora'])
-    id_genero = get_id_by_name('genero', data['genero'])
+    
+    id_produtora = get_or_create_id('produtora', data['produtora'])
+    id_genero = get_or_create_id('genero', data['genero'])
+    
     if not id_produtora or not id_genero:
-        return 400, json.dumps({"error": "Produtora ou gênero não encontrado"}), 'application/json'
+        return 500, json.dumps({"error": "Erro ao processar produtora ou gênero"}), 'application/json'
+
     status_filme = 'aprovado' if payload['role'] == 'admin' else 'pendente'
+        
     global ultimo_filme_inserido
     ultimo_filme_inserido = add_filme(data['titulo'], data['ano'], id_produtora, id_genero, data.get('sinopse'), data.get('poster'), status_filme, data.get('atores'))
     return 201, json.dumps({"message": "Filme adicionado"}), 'application/json'
@@ -75,6 +82,25 @@ def handle_put_filme(id, data, headers):
     payload, status, body, content_type = require_auth(headers)
     if status:
         return status, body, content_type
+    
+    id_produtora = get_or_create_id('produtora', data['produtora'])
+    id_genero = get_or_create_id('genero', data['genero'])
+    
+    if not id_produtora or not id_genero:
+        return 500, json.dumps({"error": "Erro ao processar produtora ou gênero"}), 'application/json'
+        
+    # Agora chama o update_filme com os IDs seguros
+    update_filme(
+        id, 
+        data['titulo'], 
+        data['ano'], 
+        id_produtora, 
+        id_genero, 
+        data.get('sinopse'), 
+        data.get('poster'), 
+        'aprovado' if payload['role'] == 'admin' else 'pendente'
+    )
+    
     update_filme(id, data['titulo'], data['ano'], get_id_by_name('produtora', data['produtora']), get_id_by_name('genero', data['genero']), data.get('sinopse'), data.get('poster'), 'aprovado' if payload['role'] == 'admin' else 'pendente')
     return 200, json.dumps({"message": "Filme atualizado"}), 'application/json'
 

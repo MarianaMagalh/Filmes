@@ -12,18 +12,18 @@ import '../../index.css'
 const API_URL = 'http://localhost:8000';
 
 export default function SeeFilme() {
-    // 1. Pega o ID da URL (Ex: /SeeFilmes/123 -> id = 123)
+    // Pega o ID da URL (Ex: /SeeFilmes/123 -> id = 123)
     const { id } = useParams();
 
-    // 2. Estados para guardar o filme, o carregamento e erros
+    const navigate = useNavigate(); // Para redirecionar após deletar
+    const { isAdmin, authData } = useAuth(); // Pega o token e status de admin
+
+    // Estados para guardar o filme, o carregamento e erros
     const [filme, setFilme] = useState(null); // Guarda os dados do filme
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Pega o status de admin para mostrar/ocultar o botão "Editar"
-    const { isAdmin } = useAuth();
-
-    // 3. useEffect para buscar o filme específico da API
+    // useEffect para buscar o filme específico da API
     useEffect(() => {
         const fetchFilme = async () => {
             try {
@@ -47,7 +47,7 @@ export default function SeeFilme() {
         fetchFilme();
     }, [id]); // Executa toda vez que o 'id' da URL mudar
 
-    // 4. Renderização condicional (Loading, Erro, Sucesso)
+    // Renderização condicional (Loading, Erro, Sucesso)
     if (loading) {
         return <p>Carregando detalhes do filme...</p>;
     }
@@ -59,6 +59,31 @@ export default function SeeFilme() {
     if (!filme) {
         return <p>Filme não encontrado.</p>;
     }
+
+    // --- FUNÇÃO DE DELETAR ---
+    const handleDelete = async () => {
+        if (!window.confirm("Tem certeza que deseja EXCLUIR este filme permanentemente?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/filmes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${authData.token}` // Só admin tem token válido pra isso
+                }
+            });
+
+            if (response.ok) {
+                alert("Filme deletado com sucesso!");
+                navigate('/AllFilmes'); // Volta para a lista
+            } else {
+                alert("Erro ao deletar filme.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+        }
+    };
 
     return (
         <main className='mainPadrao'>
@@ -72,13 +97,12 @@ export default function SeeFilme() {
                     <CardFilme filme={filme} />
 
                     <section className='infoFilme'>
-                        {/* DADO DINÂMICO */}
                         <h3 className='movieTitle'>{filme.titulo}</h3>
 
                         <div className='conjuntoInfo'>
                             <div className='info'>
                                 <h5 className='topico'>Tempo de Duração:</h5>
-                                <p className='txtTopico paragrafo'>{filme.tempoDeDuracao || 'N/A'}</p>
+                                <p className='txtTopico paragrafo'>{filme.duracao || 'N/A'}</p>
                             </div>
                             <div className='info'>
                                 <h5 className='topico'>Linguagem:</h5>
@@ -98,12 +122,10 @@ export default function SeeFilme() {
                         <div className='conjuntoInfo'>
                             <div className='info'>
                                 <h5 className='topico'>Produtora:</h5>
-                                {/* ATENÇÃO AQUI (Ver nota abaixo) */}
                                 <p className='txtTopico paragrafo'>{filme.produtora || 'N/A'}</p>
                             </div>
                             <div className='info'>
                                 <h5 className='topico'>Gênero:</h5>
-                                {/* ATENÇÃO AQUI (Ver nota abaixo) */}
                                 <p className='txtTopico paragrafo'>{filme.genero || 'N/A'}</p>
                             </div>
                         </div>
@@ -123,12 +145,25 @@ export default function SeeFilme() {
                             <p className='txtTopico'>{filme.sinopse}</p>
                         </div>
 
-                        {/* Botão de Editar só aparece se for Admin */}
-                        {isAdmin && (
-                            <Link to={`/EditarFilme/${filme.id}`}> {/* Link para a futura pág de edição */}
-                                <button className='btnEditar'>Editar</button>
-                            </Link>
-                        )}
+                        <div className="botoes-acao">
+                            {/* Botão EDITAR (Já existia) */}
+                            {isAdmin && (
+                                <Link to={`/EditarFilme/${filme.id}`}>
+                                    <button className='btnEditar'>Editar</button>
+                                </Link>
+                            )}
+
+                            {/* NOVO: Botão EXCLUIR (Só para Admin) */}
+                            {isAdmin && (
+                                <button
+                                    onClick={handleDelete}
+                                    className='btnExcluir'
+                                    style={{ backgroundColor: 'red', color: 'white', marginLeft: '10px' }}
+                                >
+                                    Excluir
+                                </button>
+                            )}
+                        </div>
                     </section>
 
                 </div>

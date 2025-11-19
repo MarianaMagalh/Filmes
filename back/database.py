@@ -147,3 +147,31 @@ def verify_token(token):
         return jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
         return None
+
+def get_or_create_id(table, name):
+    """
+    Busca o ID de um registro pelo nome. 
+    Se não existir, CRIA o registro e retorna o novo ID.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # 1. Tenta buscar o ID existente
+    cursor.execute(f"SELECT id FROM {table} WHERE nome = %s", (name,))
+    result = cursor.fetchone()
+    
+    if result:
+        conn.close()
+        return result[0] # Retorna o ID encontrado
+    
+    # 2. Se não achou, CRIA um novo
+    try:
+        cursor.execute(f"INSERT INTO {table} (nome) VALUES (%s)", (name,))
+        conn.commit()
+        new_id = cursor.lastrowid # Pega o ID que acabou de ser criado
+        conn.close()
+        return new_id
+    except Exception as e:
+        print(f"Erro ao criar em {table}: {e}")
+        conn.close()
+        return None

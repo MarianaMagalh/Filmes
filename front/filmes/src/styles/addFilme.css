@@ -1,6 +1,7 @@
 .titlePag{
     font-family: 'Retro British';
     font-size: 36px;
+    margin-top: 50px;
 }
 
 .containerAddEdit{
@@ -22,10 +23,10 @@
 }
 
 .inputFilme{
-    width: 667px;
+    width: 710px;
     height: 52px;
     border-radius: 14px;
-    padding-left: 50px;
+    padding-left: 10px;
     background-color: var(--light-blue);
     border: var(--berry) solid 5px;
     font-family: 'Modern Sans';

@@ -16,7 +16,15 @@ const CLASS_PALETTE = [
     'berry',
     'fruit',
     'dry'
-    // Adicione mais classes se tiver mais cores
+];
+
+const SUGESTOES_FILTRO = [
+    { label: "Terror", classe: "color-juice" },
+    { label: "Demi Moore", classe: "color-berry" },
+    { label: "Romance", classe: "color-fruit" },
+    { label: "Greta Gerwig", classe: "color-dry" },
+    { label: "Ficção", classe: "color-berry" }, 
+    
 ];
 
 export default function AllFilmes() {
@@ -30,7 +38,10 @@ export default function AllFilmes() {
     // 'activeFilters' agora armazena os termos que viraram tags clicáveis
     const [activeFilters, setActiveFilters] = useState([]);
 
-    // 3. Busca inicial dos dados (useEffect)
+    // Controla se o menu de sugestões está visível
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+
+    // Busca inicial dos dados (useEffect)
     useEffect(() => {
         const fetchFilmes = async () => {
             useEffect(() => {
@@ -55,7 +66,19 @@ export default function AllFilmes() {
         fetchFilmes();
     }, [isAdmin]); // (O useEffect fica como estava)
 
-    // 4. LÓGICA DE FILTRO
+    // Função para adicionar filtro (igual antes, ajustada para receber label)
+    const addFilter = (filterLabel) => {
+        if (filterLabel && !activeFilters.includes(filterLabel)) {
+            setActiveFilters([...activeFilters, filterLabel]);
+        }
+    };
+
+    // Alterna o menu do funil
+    const toggleFilterMenu = () => {
+        setShowFilterMenu(!showFilterMenu);
+    };
+
+    // LÓGICA DE FILTRO
     // Filtra a lista 'filmes' com base no 'searchTerm'
     const filmesFiltrados = filmes.filter(filme =>
         filme.titulo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -123,10 +146,16 @@ export default function AllFilmes() {
                 <Filtro
                     searchTerm={searchTerm} 
                     setSearchTerm={setSearchTerm}
-                    activeFilters={activeFilters}
+                    
+                    // Passamos os dados novos para o componente
+                    activeFilters={activeFilters}       // Tags já selecionadas
+                    suggestions={SUGESTOES_FILTRO}      // Opções disponíveis para clicar
+                    showMenu={showFilterMenu}           // Se o menu tá aberto
+                    
                     onSearchSubmit={addSearchTermAsFilter}
-                    onTagClick={removeActiveFilter}
-                    classPalette={CLASS_PALETTE}
+                    onTagClick={removeActiveFilter}     // Remove tag ativa
+                    onSuggestionClick={addFilter}       // Adiciona tag da sugestão
+                    onToggleMenu={toggleFilterMenu}     // Abre/Fecha o funil
                 />
 
                 <div className="filmesGridContainer">

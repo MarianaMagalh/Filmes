@@ -1,3 +1,4 @@
+-- database: :memory:
 -- Criar banco de dados
 CREATE DATABASE filmes_db;
 USE filmes_db;
@@ -144,3 +145,7 @@ ALTER TABLE usuario ADD COLUMN nome VARCHAR(100), ADD COLUMN role VARCHAR(20) DE
 
 -- Inserir dados de exemplo (opcional, para testar)
 INSERT INTO usuario (nome, email, password, role) VALUES ('Admin User', 'admin@example.com', '$2b$12$hashedpassword', 'admin');  -- Hash uma senha real com bcrypt
+
+UPDATE usuario 
+SET role = 'admin' 
+WHERE email = 'admin@amores.com';
