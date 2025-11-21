@@ -58,17 +58,17 @@ Este projeto foi desenvolvido sem o uso de frameworks pesados no backend, focand
    - Crie o banco `filmes_db` e importe as tabelas (script SQL).
 
 2. **Backend:**
-   cd back
-   py -m venv env
-   entre na env e ative ela
-   pip install -r requimentes.txt
-   python server.py
+   - cd back
+   - py -m venv env
+   - entre na env e ative ela
+   - pip install -r requimentes.txt
+   - python server.py
 
 3. **Frontend**
-    cd front
-    cd filmes
-    npm i
-    npm run dev
+    - cd front
+    - cd filmes
+    - npm i
+    - npm run dev
 
 ## 🎨 Link do Figma
 
