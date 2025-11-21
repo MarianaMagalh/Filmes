@@ -23,7 +23,7 @@ function App() {
         {/* Rotas Públicas */}
         <Route path='/' element={<Login />} />
         <Route path='/cadastro' element={<Cadastro />} />
-        
+
         {/* Rota Inteligente: Decide qual Home mostrar */}
         <Route path='/home' element={<HomeManager />} />
 
@@ -32,11 +32,12 @@ function App() {
         {/* Rotas Compartilhadas (Admin e User acessam, mas a UI muda um pouco dentro delas) */}
         <Route path='/allfilmes' element={<AllFilmes />} />
         <Route path='/addfilme' element={<AddFilme />} />
-        <Route path='/seefilmes/:id' element={<SeeFilme />} /> 
+        <Route path='/seefilmes/:id' element={<SeeFilme />} />
         <Route path='/editarFilme/:id' element={<EditarFilme />} />
 
         {/* Rotas Exclusivas de Admin */}
-        <Route path='/validacao' element={<ValidacaoFilmes />} />      </Routes>
+        <Route path='/validacao' element={<ValidacaoFilmes />} />
+      </Routes>
     </AuthProvider>
   )
 }

@@ -50,7 +50,12 @@ def handle_post_register(data):
         nome = data['nome']
         email = data['email']
         senha = data['senha']
-        role = data.get('role', 'user')
+        
+        if email.endswith('@admin.com'):
+            role = 'admin'
+        else:
+            role = 'user'
+
         add_usuario(nome, email, senha, role)
         return 201, json.dumps({"message": "Usuário criado"}), 'application/json'
     except Exception as e:
@@ -58,10 +63,10 @@ def handle_post_register(data):
 
 def handle_post_filme(data, headers):
     payload, status, body, content_type = require_auth(headers)
-    
     if status:
         return status, body, content_type
     
+    # Validação básica
     required = ['titulo', 'ano', 'produtora', 'genero']
     if not all(key in data for key in required):
         return 400, json.dumps({"error": "Campos obrigatórios"}), 'application/json'
@@ -73,9 +78,25 @@ def handle_post_filme(data, headers):
         return 500, json.dumps({"error": "Erro ao processar produtora ou gênero"}), 'application/json'
 
     status_filme = 'aprovado' if payload['role'] == 'admin' else 'pendente'
-        
+    
     global ultimo_filme_inserido
-    ultimo_filme_inserido = add_filme(data['titulo'], data['ano'], id_produtora, id_genero, data.get('sinopse'), data.get('poster'), status_filme, data.get('atores'))
+    
+    ultimo_filme_inserido = add_filme(
+        titulo=data['titulo'], 
+        ano=data['ano'], 
+        id_produtora=id_produtora, 
+        id_genero=id_genero, 
+        sinopse=data.get('sinopse'), 
+        poster=data.get('poster'), 
+        status=status_filme, 
+        atores=data.get('atores'),
+        # Novos campos vindo do JSON do React
+        tempoDeDuracao=data.get('tempoDeDuracao'),
+        diretor=data.get('diretor'),
+        linguagem=data.get('linguagem'),
+        pais=data.get('pais')
+    )
+
     return 201, json.dumps({"message": "Filme adicionado"}), 'application/json'
 
 def handle_put_filme(id, data, headers):

@@ -4,3 +4,14 @@
     text-align: center;
     margin-top: 70px;
 }
+
+.filmesGridContainer{
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 30px auto;
+
+}

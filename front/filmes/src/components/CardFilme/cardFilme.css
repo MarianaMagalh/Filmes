@@ -21,14 +21,18 @@
 
 
 .containerCard{
-    width: 590px;
-    height: 810px;
+    width: 690px;
+    height: 950px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .imgFilmePoster{
-    width: 450px;
-    height: 650px;
+    width: 520px;
+    height: 760px;
+    margin-top: 74px;
+    margin-bottom: 77px;
+    margin-left: 59px;
+    margin-right: 61px;
 }

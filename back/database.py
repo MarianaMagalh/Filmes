@@ -8,7 +8,8 @@ DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
     'password': '',
-    'database': 'filmes_db'
+    'database': 'filmes_db',
+    'port': 3307
 }
 
 # Chave secreta para JWT (use variável de ambiente em produção)
@@ -19,11 +20,13 @@ def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
 def get_filmes(filtros=None):
-    """Busca filmes com filtros opcionais (titulo, ano, categoria). Retorna lista de dicionários."""
+    """Busca filmes com filtros opcionais."""
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+    
+    # Mudamos para f.* para pegar TODAS as colunas (incluindo diretor, pais, etc)
     query = """
-        SELECT f.id, f.titulo, f.ano, f.sinopse, f.poster, f.status,
+        SELECT f.*, 
                g.nome AS genero, p.nome AS produtora
         FROM filme f
         LEFT JOIN genero g ON f.id_genero = g.id
@@ -31,6 +34,7 @@ def get_filmes(filtros=None):
         WHERE 1=1
     """
     params = []
+    # ... (o resto da lógica de filtros continua igual) ...
     if filtros:
         if 'titulo' in filtros:
             query += " AND f.titulo LIKE %s"
@@ -39,8 +43,9 @@ def get_filmes(filtros=None):
             query += " AND f.ano = %s"
             params.append(filtros['ano'])
         if 'categoria' in filtros:
-            query += " AND f.id IN (SELECT id_filme FROM filme_categoria fc JOIN categoria c ON fc.id_categoria = c.id WHERE c.nome = %s)"
-            params.append(filtros['categoria'])
+             query += " AND f.id IN (SELECT id_filme FROM filme_categoria fc JOIN categoria c ON fc.id_categoria = c.id WHERE c.nome = %s)"
+             params.append(filtros['categoria'])
+             
     cursor.execute(query, params)
     filmes = cursor.fetchall()
     conn.close()
@@ -73,24 +78,34 @@ def get_filme_by_id(filme_id):
     conn.close()
     return filme
 
-def add_filme(titulo, ano, id_produtora, id_genero, sinopse, poster, status, atores=None, diretores=None, categorias=None):
-    """Adiciona filme e relacionamentos. Retorna dados do filme inserido."""
+def add_filme(titulo, ano, id_produtora, id_genero, sinopse, poster, status, atores=None, tempoDeDuracao=None, diretor=None, linguagem=None, pais=None):
+    """Adiciona filme com todos os campos novos."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO filme (titulo, ano, sinopse, poster, id_genero, id_produtora, status) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                   (titulo, ano, sinopse, poster, id_genero, id_produtora, status))
+    
+    # Query de INSERT atualizada com as novas colunas
+    sql = """
+        INSERT INTO filme 
+        (titulo, ano, sinopse, poster, id_genero, id_produtora, status, tempoDeDuracao, diretor, linguagem, pais) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(sql, (titulo, ano, sinopse, poster, id_genero, id_produtora, status, tempoDeDuracao, diretor, linguagem, pais))
+    
     filme_id = cursor.lastrowid
-    # Inserir relacionamentos (ex.: atores)
+    
+    # Inserir relacionamentos (atores)
     if atores:
         for ator_nome in atores:
-            cursor.execute("INSERT IGNORE INTO ator (nome) VALUES (%s)", (ator_nome,))  # IGNORE se já existe
+            cursor.execute("INSERT IGNORE INTO ator (nome) VALUES (%s)", (ator_nome,))
             cursor.execute("SELECT id FROM ator WHERE nome = %s", (ator_nome,))
-            ator_id = cursor.fetchone()[0]
-            cursor.execute("INSERT INTO filme_ator (id_filme, id_ator) VALUES (%s, %s)", (filme_id, ator_id))
-    # Similar para diretores e categorias (implemente se necessário)
+            result = cursor.fetchone()
+            if result:
+                ator_id = result[0]
+                cursor.execute("INSERT INTO filme_ator (id_filme, id_ator) VALUES (%s, %s)", (filme_id, ator_id))
+    
     conn.commit()
     conn.close()
-    return {"id": filme_id, "titulo": titulo, "ano": ano}
+    return {"id": filme_id, "titulo": titulo}
 
 def update_filme(filme_id, titulo, ano, id_produtora, id_genero, sinopse, poster, status):
     """Atualiza filme."""

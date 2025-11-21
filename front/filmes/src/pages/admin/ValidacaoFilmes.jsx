@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 
-import NavAdmin from '../../components/NavAdmin/NavAdmin'
+import NavBar from '../../components/NavBar/NavBar'
 import GiraGira from '../../components/GiraGira/GiraGira'
-import CardValidacao from '../../components/CardValidacao/CardValidacao'
+// Verifique se o caminho da pasta do card está correto aqui:
+import CardValidacao from '../../components/CardValidacao/CardValidacao' 
 
 import '../../styles/allFilmes.css';
 import '../../index.css'
@@ -13,9 +14,10 @@ const API_URL = 'http://localhost:8000'
 export default function ValidacaoFilmes() {
     const [filmesPendentes, setFilmesPendentes] = useState([]);
     const [loading, setLoading] = useState(true);
+    
     const { authData } = useAuth();
 
-    // 1. Busca Filmes e Filtra os Pendentes
+    // Busca Filmes e Filtra os Pendentes
     useEffect(() => {
         const fetchFilmes = async () => {
             try {
@@ -32,7 +34,7 @@ export default function ValidacaoFilmes() {
         fetchFilmes()
     }, [])
 
-    // 2. Função para Aprovar Filme
+    // DEFINIÇÃO DA FUNÇÃO APROVAR (handleApprove)
     const handleApprove = async (idFilme) => {
         try {
             const response = await fetch(`${API_URL}/aprovacao_filme`, {
@@ -46,7 +48,7 @@ export default function ValidacaoFilmes() {
 
             if (response.ok) {
                 alert('Filme Aprovado!');
-                // Remove o filme da lista visualmente
+                // Remove o filme da lista visualmente para não precisar recarregar
                 setFilmesPendentes(prev => prev.filter(f => f.id !== idFilme))
             } else {
                 alert('Erro ao aprovar.')
@@ -56,7 +58,7 @@ export default function ValidacaoFilmes() {
         }
     };
 
-    // Função para Deletar/Reprovar (Falta criar essa lógica no backend DELETE)
+    // DEFINIÇÃO DA FUNÇÃO REJEITAR (handleReject)
     const handleReject = async (idFilme) => {
         if (!window.confirm("Tem certeza que deseja rejeitar e deletar este filme?")) return;
 
@@ -68,7 +70,7 @@ export default function ValidacaoFilmes() {
                 }
             });
             if (response.ok) {
-                alert('Filme deletado!');
+                alert('Filme deletado/rejeitado!');
                 setFilmesPendentes(prev => prev.filter(f => f.id !== idFilme));
             }
         } catch (error) {
@@ -76,24 +78,43 @@ export default function ValidacaoFilmes() {
         }
     };
 
+    // RENDERIZAÇÃO (HTML)
+    if (loading) {
+        return (
+            <main className='mainPadrao'>
+                 <GiraGira />
+                 <div className='formatacao'>
+                    <NavBar />
+                    <h2 className='titlePage'>Validação de Filmes</h2>
+                    <p style={{textAlign: 'center', marginTop: '50px'}}>Carregando filmes pendentes...</p>
+                 </div>
+            </main>
+        )
+    }
+
     return (
         <main className='mainPadrao'>
             <GiraGira />
             <div className='formatacao'>
-                <NavAdmin />
+                <NavBar />
                 <h2 className='titlePage'>Validação de Filmes</h2>
 
                 <div className="filmes-grid-container">
-                    {/* ... mapeamento ... */}
-                    {filmesPendentes.map((filme, index) => (
-                        <CardValidacao
-                            key={filme.id}
-                            filme={filme}
-                            index={index}
-                            onApprove={handleApprove} // Sua função existente
-                            onReject={handleReject}   // Nova função acima
-                        />
-                    ))}
+                    {filmesPendentes.length === 0 ? (
+                        <div style={{textAlign: 'center', width: '100%', marginTop: '20px'}}>
+                            <p>Nenhum filme pendente de aprovação.</p>
+                        </div>
+                    ) : (
+                        filmesPendentes.map((filme, index) => (
+                            <CardValidacao
+                                key={filme.id}
+                                filme={filme}
+                                index={index}
+                                onApprove={handleApprove} 
+                                onReject={handleReject}   
+                            />
+                        ))
+                    )}
                 </div>
             </div>
         </main>

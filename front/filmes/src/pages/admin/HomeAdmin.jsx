@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import NavAdmin from '../../components/NavAdmin/NavAdmin'
+import NavBar from '../../components/NavBar/NavBar'
 import GiraGira from '../../components/GiraGira/GiraGira'
 
 import '../../styles/homeAdmin.css'
@@ -15,7 +15,7 @@ export default function HomeAdmin() {
             
             <div className='formatacao'>
                 <div className='containerInfoHome'>
-                    <NavAdmin />
+                    <NavBar />
                 </div>
                 
                 

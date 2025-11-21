@@ -8,63 +8,67 @@ import '../../index.css'
 import './perfil.css'
 
 // 1. Recebemos 'onClose' como prop vinda do NavBar
-export default function Perfil({ onClose }){
-    
-    // REMOVIDO: O estado 'isMenuOpen' fica no NavBar, não aqui inside.
-    
+export default function Perfil({ onClose }) {
+
     const { logout, isAdmin, authData } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         logout();
-        navigate('/'); 
+        navigate('/');
         // Verifica se onClose existe antes de chamar
         if (onClose) onClose();
     };
 
-    return(
-        <div className="profile-menu-overlay">
-            <div className="profile-menu-container">
-                
-                {/* Cabeçalho */}
-                <div className="profile-header">
-                    <div className="profile-icon-large">
-                        <img src={IconPerfil} alt="Perfil" />
-                    </div>
-                    
-                    <h3 className="profile-name">
-                        {authData.name || 'Usuário'} 
-                    </h3>
-                    
-                    <span className="profile-role-tag">
-                        {isAdmin ? 'Administrador' : 'Membro'}
-                    </span>
-                </div>
+    return (
+        <div>
+            <div className="profileMenuContainer">
+                <figure className="profileIconLarge" >
+                    <img src={IconPerfil} alt="Perfil" />
+                </figure>
+
+
+                <h3 className="profileName">
+                    {authData.nome || 'Usuário'}
+                </h3>
 
                 {/* Links de Navegação */}
-                <div className="profile-links">
-                    
-                    <Link to="/Home" className="menu-item item-pink-pattern" onClick={onClose}>
-                        HOME
+                <div className="profileLinks">
+
+                    <Link to="/Home" className="menu-item itemPinkPattern" onClick={onClose}>
+                        <p>
+                            HOME
+                        </p>
+
                     </Link>
 
-                    <Link to="/AllFilmes" className="menu-item item-yellow-pattern" onClick={onClose}>
-                        FILMES
+                    <Link to="/allfilmes" className="menu-item itemYellowPattern" onClick={onClose}>
+                        <p>
+                            FILMES
+                        </p>
+
+
                     </Link>
 
-                    <Link to="/AddFilme" className="menu-item item-green-pattern" onClick={onClose}>
-                        ADICIONAR FILMES
+                    <Link to="/addfilme" className="menu-item itemGreenPattern" onClick={onClose}>
+                        <p>
+                            ADICIONAR FILMES
+                        </p>
+
                     </Link>
-                    
+
                     {isAdmin && (
-                        <Link to="/admin/validacao" className="menu-item item-check-pattern" onClick={onClose}>
-                            VALIDAÇÃO
+                        <Link to="/validacao" className="menu-item itemCheckPattern" onClick={onClose}>
+                            <p>
+                                VALIDAÇÃO
+                            </p>
+
                         </Link>
                     )}
 
                 </div>
 
-                <button className="menu-item btn-logout" onClick={handleLogout}>
+                <button className="menuItem btnLogout" onClick={handleLogout}>
                     SAIR
                 </button>
             </div>

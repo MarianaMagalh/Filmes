@@ -26,9 +26,16 @@
     padding-right: 25px;
 }
 
-.titleContainerNewMovies {
+.titleContainer {
     font-family: 'Retro British';
     font-size: 25px;
+    color: var(--text-color);
+}
+
+#recebeFilmesNovos{
+    display: flex;
+    margin-top: 20px;
+    gap: 40px;
 }
 
 .containerDecoracao {
@@ -47,14 +54,17 @@
     display: flex;
     justify-content: left;
     align-items: self-start;
-    border-radius: 14px;
+    border-bottom-right-radius: 14px;
 }
 
 .LinkHomeAddFilmes{
     background-color: var(--sunset);
-    width: 650px;
-    height: 325px;
+    width: 600px;
+    height: 300px;
     border-radius: 14px;
+    padding-top: 25px;
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .imgCardDecoration1{

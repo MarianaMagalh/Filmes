@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext.jsx'
 
 import GiraGira from '../../components/GiraGira/GiraGira'
 import NavBar from '../../components/NavBar/NavBar'
+import Footer from '../../components/Footer/Footer.jsx'
 import Filtro from '../../components/Filtro/Filtro'
 import CardAcssFilme from '../../components/CarAcssFilme/CardAcssFilme'
 
@@ -11,20 +12,9 @@ import '../../index.css'
 
 const API_URL = 'http://localhost:8000';
 
+// Mantemos apenas a paleta de cores
 const CLASS_PALETTE = [
-    'juice',
-    'berry',
-    'fruit',
-    'dry'
-];
-
-const SUGESTOES_FILTRO = [
-    { label: "Terror", classe: "color-juice" },
-    { label: "Demi Moore", classe: "color-berry" },
-    { label: "Romance", classe: "color-fruit" },
-    { label: "Greta Gerwig", classe: "color-dry" },
-    { label: "Ficção", classe: "color-berry" }, 
-    
+    'color-sun', 'color-berry', 'color-fruit', 'color-dry'
 ];
 
 export default function AllFilmes() {
@@ -32,106 +22,104 @@ export default function AllFilmes() {
     const [loading, setLoading] = useState(true);
     const { isAdmin } = useAuth();
 
-    // 'searchTerm' para o que está sendo digitado na barra de busca
+    // Filtros
     const [searchTerm, setSearchTerm] = useState('');
-
-    // 'activeFilters' agora armazena os termos que viraram tags clicáveis
     const [activeFilters, setActiveFilters] = useState([]);
-
-    // Controla se o menu de sugestões está visível
     const [showFilterMenu, setShowFilterMenu] = useState(false);
+    
+    // Estado para as sugestões dinâmicas (substitui a constante)
+    const [sugestoesDinamicas, setSugestoesDinamicas] = useState([]);
 
-    // Busca inicial dos dados (useEffect)
+    // Busca os filmes (Sem aninhamento errado)
     useEffect(() => {
         const fetchFilmes = async () => {
-            useEffect(() => {
-                // ... (sua lógica de fetch)
-                const fetchFilmes = async () => {
-                    try {
-                        const response = await fetch(`${API_URL}/filmes`);
-                        const data = await response.json();
+            try {
+                const response = await fetch(`${API_URL}/filmes`);
+                const data = await response.json();
 
-                        if (isAdmin) {
-                            setFilmes(data);
-                        } else {
-                            setFilmes(data.filter(filme => filme.status === 'aprovado'));
-                        }
-                    } catch (error) { console.error("Erro:", error); }
-                    finally { setLoading(false); }
-                };
-                fetchFilmes();
-            }, [isAdmin]);
-
+                if (isAdmin) {
+                    setFilmes(data);
+                } else {
+                    setFilmes(data.filter(filme => filme.status === 'aprovado'));
+                }
+            } catch (error) { 
+                console.error("Erro:", error); 
+            } finally { 
+                setLoading(false);
+            }
         };
         fetchFilmes();
-    }, [isAdmin]); // (O useEffect fica como estava)
+    }, [isAdmin]);
 
-    // Função para adicionar filtro (igual antes, ajustada para receber label)
+    // Gera as sugestões baseadas nos 3 primeiros filmes
+    useEffect(() => {
+        if (filmes.length === 0) {
+            setSugestoesDinamicas([]);
+            return;
+        }
+
+        // Pega apenas os 3 primeiros filmes da lista
+        const primeirosFilmes = filmes.slice(0, 3);
+        
+        let tagsBrutas = [];
+
+        // Extrai as informações desses filmes
+        primeirosFilmes.forEach(filme => {
+            if (filme.titulo) tagsBrutas.push(filme.titulo);
+            if (filme.genero) tagsBrutas.push(filme.genero);
+            if (filme.diretor) tagsBrutas.push(filme.diretor);
+        });
+
+        // Remove duplicatas (ex: se 2 filmes forem de Terror, só mostra 1 tag)
+        const tagsUnicas = [...new Set(tagsBrutas)];
+
+        // Formata para o padrão que o Filtro espera (label + cor)
+        const sugestoesFormatadas = tagsUnicas.map((tag, index) => ({
+            label: tag,
+            classe: CLASS_PALETTE[index % CLASS_PALETTE.length] // Dá uma cor da paleta
+        }));
+
+        setSugestoesDinamicas(sugestoesFormatadas);
+
+    }, [filmes]); // Recalcula toda vez que a lista de filmes mudar (ex: deletar)
+
+
+    // --- Funções de Controle ---
     const addFilter = (filterLabel) => {
         if (filterLabel && !activeFilters.includes(filterLabel)) {
             setActiveFilters([...activeFilters, filterLabel]);
         }
     };
 
-    // Alterna o menu do funil
-    const toggleFilterMenu = () => {
-        setShowFilterMenu(!showFilterMenu);
-    };
-
-    // LÓGICA DE FILTRO
-    // Filtra a lista 'filmes' com base no 'searchTerm'
-    const filmesFiltrados = filmes.filter(filme =>
-        filme.titulo.toLowerCase().includes(searchTerm.toLowerCase())
-        // (Podemos adicionar diretor, ano, etc. aqui depois)
-    );
+    const toggleFilterMenu = () => setShowFilterMenu(!showFilterMenu);
 
     const addSearchTermAsFilter = () => {
         if (searchTerm.trim() && !activeFilters.includes(searchTerm.trim())) {
-            setActiveFilters(prevFilters => [...prevFilters, searchTerm.trim()]);
-            setSearchTerm(''); // Limpa a barra de busca após adicionar
+            setActiveFilters(prev => [...prev, searchTerm.trim()]);
+            setSearchTerm('');
         }
     };
 
-    // Função para remover um filtro ativo (ao clicar na tag)
     const removeActiveFilter = (filterToRemove) => {
-        setActiveFilters(prevFilters => prevFilters.filter(f => f !== filterToRemove));
+        setActiveFilters(prev => prev.filter(f => f !== filterToRemove));
     };
 
-    // LÓGICA DE FILTRAGEM DOS FILMES
-    const filmesExibidos = filmes.filter(filme => {
-        // Se não há filtros ativos, todos os filmes passam (já filtrados por status)
-        if (activeFilters.length === 0) {
-            return true;
-        }
+    // Lógica de Filtragem Unificada
+    const filmesParaExibir = filmes.filter(filme => {
+        const matchBarraBusca = filme.titulo.toLowerCase().includes(searchTerm.toLowerCase());
 
-        // Verifica se o filme corresponde a TODOS os filtros ativos (AND lógico)
-        return activeFilters.every(filterTerm => {
-            const lowerFilterTerm = filterTerm.toLowerCase();
-
-            // Verifica o título
-            if (filme.titulo && filme.titulo.toLowerCase().includes(lowerFilterTerm)) {
-                return true;
-            }
-            // Verifica o diretor
-            if (filme.diretor && filme.diretor.toLowerCase().includes(lowerFilterTerm)) {
-                return true;
-            }
-            // Verifica os atores
-            if (filme.atores && filme.atores.some(ator => ator.toLowerCase().includes(lowerFilterTerm))) {
-                return true;
-            }
-            // Verifica o gênero
-            if (filme.genero && filme.genero.toLowerCase().includes(lowerFilterTerm)) {
-                return true;
-            }
-            // Verifica o ano (se o filtro for um número)
-            if (!isNaN(parseInt(lowerFilterTerm)) && filme.ano === parseInt(lowerFilterTerm)) {
-                return true;
-            }
-            // ... adicione outros campos que você quer pesquisar ...
-
-            return false; // Se o filme não corresponde a este filterTerm, ele não passa
+        const matchTags = activeFilters.length === 0 || activeFilters.every(filterTerm => {
+            const lowerFilter = filterTerm.toLowerCase();
+            return (
+                (filme.titulo && filme.titulo.toLowerCase().includes(lowerFilter)) ||
+                (filme.diretor && filme.diretor.toLowerCase().includes(lowerFilter)) ||
+                (filme.genero && filme.genero.toLowerCase().includes(lowerFilter)) ||
+                (filme.produtora && filme.produtora.toLowerCase().includes(lowerFilter)) ||
+                (filme.ano && filme.ano.toString() === lowerFilter)
+            );
         });
+
+        return matchBarraBusca && matchTags;
     });
 
     return (
@@ -140,40 +128,50 @@ export default function AllFilmes() {
 
             <div className='formatacao'>
                 <NavBar />
-
                 <h2 className='titlePage'>Filmes</h2>
 
                 <Filtro
                     searchTerm={searchTerm} 
                     setSearchTerm={setSearchTerm}
+                    activeFilters={activeFilters}       
                     
-                    // Passamos os dados novos para o componente
-                    activeFilters={activeFilters}       // Tags já selecionadas
-                    suggestions={SUGESTOES_FILTRO}      // Opções disponíveis para clicar
-                    showMenu={showFilterMenu}           // Se o menu tá aberto
+                    // Passamos o estado dinâmico em vez da lista fixa
+                    suggestions={sugestoesDinamicas}      
                     
+                    showMenu={showFilterMenu}
+                    classPalette={CLASS_PALETTE}
                     onSearchSubmit={addSearchTermAsFilter}
-                    onTagClick={removeActiveFilter}     // Remove tag ativa
-                    onSuggestionClick={addFilter}       // Adiciona tag da sugestão
-                    onToggleMenu={toggleFilterMenu}     // Abre/Fecha o funil
+                    onTagClick={removeActiveFilter}     
+                    onSuggestionClick={addFilter}       
+                    onToggleMenu={toggleFilterMenu}     
                 />
 
                 <div className="filmesGridContainer">
                     {loading ? (
                         <p>Carregando filmes...</p>
+                    ) : filmesParaExibir.length === 0 ? (
+                        <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
+                             <p>Nenhum filme encontrado com esses filtros.</p>
+                             <button 
+                                onClick={() => {setSearchTerm(''); setActiveFilters([]);}}
+                                style={{ marginTop: '10px', cursor: 'pointer', textDecoration: 'underline', background:'none', border:'none', color: 'inherit' }}
+                             >
+                                Limpar filtros
+                            </button>
+                        </div>
                     ) : (
-                        // MUDANÇA AQUI: Passamos (filme, index)
-                        filmesFiltrados.map((filme, index) => (
+                        filmesParaExibir.map((filme, index) => (
                             <CardAcssFilme
                                 key={filme.id}
-                                filme={filme} // Passa os dados do filme
-                                index={index} // Passa a posição (0, 1, 2, ...)
+                                filme={filme} 
+                                index={index} 
                             />
                         ))
                     )}
                 </div>
-            </div>
 
+                <Footer />
+            </div>
         </main>
     )
 }
